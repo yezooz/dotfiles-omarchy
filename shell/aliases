@@ -30,6 +30,8 @@ if command -v yt-dlp >/dev/null; then
   alias yt-mp4='yt-dlp -ciw -o "%(title)s.%(ext)s" --merge-output-format mp4 --restrict-filenames'
 fi
 
+alias claude-yolo='claude --dangerously-skip-permissions'
+
 # Separate Claude config for work, so the two histories stay apart.
 alias claude-work='CLAUDE_CONFIG_DIR="$HOME/.claude-work" claude'
 
