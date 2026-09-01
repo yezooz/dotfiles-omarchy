@@ -74,6 +74,24 @@ link() {
   ln -s "$src" "$dest" && act "linked $dest -> $1"
 }
 
+# Create an empty file if it does not exist. Needed where a config includes a
+# local override unconditionally: psql has no way to test for a file's
+# existence, so `\i ~/.psqlrc.local` errors on every startup unless the file
+# is there. The file is the user's own, so an existing one is never touched.
+ensure_file() {
+  local dest="$1"
+
+  [[ -e $dest ]] && return 0
+
+  if $DRY_RUN; then
+    act "would create empty $dest"
+    return 0
+  fi
+
+  mkdir -p "$(dirname "$dest")"
+  : > "$dest" && act "created empty $dest"
+}
+
 # Append a guarded source line to ~/.bashrc, once.
 #
 # ~/.bashrc stays Omarchy's own file; we only add the hand-off. Omarchy's rc
@@ -168,6 +186,7 @@ header "Git and tools"
 link config/git/config "$HOME/.gitconfig"
 link config/git/ignore "$HOME/.config/git/ignore"
 link config/psqlrc    "$HOME/.psqlrc"
+ensure_file "$HOME/.psqlrc.local"
 
 # Only the four files we own. hyprland.lua, .luarc.json, hyprsunset.conf and
 # xdph.conf stay Omarchy's, so `omarchy refresh hyprland` keeps working.
