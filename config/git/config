@@ -1,0 +1,105 @@
+# Personal git config.
+#
+# Git reads ~/.config/git/config (Omarchy's, themed and refreshable) and then
+# this file, which wins. So anything Omarchy already sets is deliberately
+# absent here: co/br/ci/st, pull.rebase, push.autoSetupRemote,
+# diff.algorithm/colorMoved/mnemonicPrefix, commit.verbose, rerere, column.ui,
+# and branch/tag sorting.
+
+[user]
+	name = Marek Mikuliszyn
+	email = marek.mikuliszyn@gmail.com
+
+[core]
+	autocrlf = input
+	whitespace = fix,space-before-tab,tab-in-indent,trailing-space
+	# No excludesfile: git reads ~/.config/git/ignore by default, which is
+	# where install.sh puts it.
+
+[apply]
+	whitespace = fix
+
+[branch]
+	autosetupmerge = true
+
+[rebase]
+	autoStash = true
+
+[fetch]
+	prune = true
+
+[push]
+	default = simple
+
+[log]
+	decorate = short
+
+[pager]
+	status = true
+	show-branch = true
+	branch = false
+
+[format]
+	numbered = auto
+
+[alias]
+	ru = remote update
+	cam = commit -a -m
+	p = pull
+	pr = pull --rebase
+	praise = blame
+	staged = diff --cached
+	unstaged = diff
+	both = diff HEAD
+	oneline = log --oneline
+	amend = commit --amend
+	undo = reset --hard HEAD^
+	tree = log --graph --decorate --pretty=oneline --abbrev-commit --all
+	myhist = !git log --author=\"$(git config user.name)\" --format=%H | xargs git show --name-only --format=-------------%n%Cred%s%Creset%n%Cblue%h%Creset
+
+	# Prune remote-tracking refs and delete local branches already merged into
+	# the mainline. Dropped the `git gc --aggressive` the old version ran every
+	# time: minutes of CPU for no benefit, since git gc's own heuristics handle
+	# repacking. Run `git gc --aggressive` by hand if a repo really needs it.
+	trim = !git remote prune origin && git branch --merged | grep -vE '^\\*|^\\+|\\b(master|main|development|integration|production)$' | xargs -r git branch -d
+
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+
+[color]
+	ui = auto
+[color "branch"]
+	current = yellow reverse
+	local = yellow
+	remote = green
+[color "diff"]
+	meta = yellow bold
+	frag = magenta bold
+	old = red bold
+	new = green bold
+[color "status"]
+	added = yellow
+	changed = green
+	untracked = cyan
+
+# Shorthand remotes. These previously pointed at git://, which GitHub disabled
+# in 2022; https and ssh are what work now.
+[url "git@github.com:"]
+	insteadOf = "gh:"
+	pushInsteadOf = "github:"
+	pushInsteadOf = "git://github.com/"
+[url "https://github.com/"]
+	insteadOf = "github:"
+[url "git@gist.github.com:"]
+	insteadOf = "gst:"
+	pushInsteadOf = "gist:"
+	pushInsteadOf = "git://gist.github.com/"
+[url "https://gist.github.com/"]
+	insteadOf = "gist:"
+
+# Work identity, if ~/work exists. Keeps the work email out of this repo.
+[includeIf "gitdir:~/work/"]
+	path = ~/.gitconfig-work

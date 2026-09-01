@@ -1,0 +1,47 @@
+# Additions only.
+#
+# Omarchy's default/bash/aliases already defines a, c, cd, d, g, h, n, r, t,
+# ls, lsa, lt, lta, .., ..., ...., open, ff, eff, gcm, gcam, gcad — and
+# fns/worktrees defines ga (worktree add) and gd (worktree remove). Those names
+# are deliberately left alone; adding them here would shadow them.
+
+# Git shorthands Omarchy does not define. `ga` is NOT among them: on Omarchy
+# that is `git worktree add`. Use `g add`.
+alias gs='git status'
+alias gaa='git add --all'
+alias gc='git commit'
+alias gca='git commit --amend'
+alias gp='git push'
+alias gpf='git push --force-with-lease'
+alias gpl='git pull'
+alias gf='git fetch'
+alias gfa='git fetch --all --prune'
+alias gw='git worktree'
+alias gwl='git worktree list'
+
+alias path='echo "$PATH" | tr ":" "\n"'
+alias dotfiles='cd "$DOTFILES"'
+
+command -v kubectl >/dev/null && alias k=kubectl
+
+if command -v yt-dlp >/dev/null; then
+  alias yt='yt-dlp -ciw -o "%(title)s.%(ext)s" --restrict-filenames'
+  alias yt-mp3='yt-dlp -ciw -o "%(title)s.%(ext)s" --extract-audio --audio-format mp3 --audio-quality 0 --restrict-filenames'
+  alias yt-mp4='yt-dlp -ciw -o "%(title)s.%(ext)s" --merge-output-format mp4 --restrict-filenames'
+fi
+
+# Separate Claude config for work, so the two histories stay apart.
+alias claude-work='CLAUDE_CONFIG_DIR="$HOME/.claude-work" claude'
+
+# aws-vault sessions unlocked by a 1Password TOTP. Profile names come from
+# ~/.bashrc.local; each alias only exists once its variable is set.
+if command -v aws-vault >/dev/null && command -v op >/dev/null; then
+  [[ -n ${AWS_VAULT_PROFILE:-} ]] &&
+    alias av="aws-vault exec --duration=12h ${AWS_VAULT_PROFILE} --mfa-token=\$(op item get \"${AWS_VAULT_1P_ITEM}\" --otp)"
+  [[ -n ${AWS_VAULT_ADMIN_PROFILE:-} ]] &&
+    alias aav="aws-vault exec --duration=1h ${AWS_VAULT_ADMIN_PROFILE} --mfa-token=\$(op item get \"${AWS_VAULT_1P_ITEM}\" --otp)"
+  # No inline --mfa-token: relies on the cached ~12h session plus mfa_process
+  # in ~/.aws/config, so 1Password is only prompted on an actual refresh.
+  [[ -n ${AWS_VAULT_POWER_PROFILE:-} ]] &&
+    alias apv="aws-vault exec --duration=12h ${AWS_VAULT_POWER_PROFILE}"
+fi

@@ -1,0 +1,24 @@
+# Packages on top of Omarchy's base install.
+#
+# Installed with `./install.sh --packages`, which skips anything already
+# present and hands the rest to `omarchy pkg add`. Prefix a line with `aur:`
+# to route it through `omarchy pkg aur add` instead.
+#
+# Language runtimes are deliberately absent: mise owns those, per-project via
+# .mise.toml, and Omarchy already activates it.
+
+# --- Currently installed beyond Omarchy base ---
+1password
+1password-cli
+ghostty
+voxtype-bin
+
+# --- Optional: enables config that is present here but guarded ---
+# Uncomment what you want; the shell aliases and scripts appear once the
+# matching binary exists.
+
+# kubectl            # k alias
+# aws-vault          # av / aav / apv aliases (with 1password-cli, above)
+# postgresql-libs    # psql, which reads the ~/.psqlrc this repo links
+# tig                # the `git hist` alias, if you re-add it
+# perl-rename        # replaces the vendored bin/rename that was dropped

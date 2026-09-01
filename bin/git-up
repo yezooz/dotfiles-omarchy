@@ -1,0 +1,9 @@
+#!/bin/sh
+#
+# Fetch and rebase onto the default branch.
+
+set -e
+
+branch=$(git default-branch)
+git fetch origin
+git rebase "origin/$branch" "$@"

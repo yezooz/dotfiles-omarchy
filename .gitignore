@@ -1,0 +1,7 @@
+# Machine-local overrides, sourced but never committed.
+*.local
+.bashrc.local
+.gitconfig-work
+
+# Backups install.sh leaves behind
+*.bak.*

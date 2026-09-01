@@ -1,0 +1,49 @@
+# Global gitignore, linked to ~/.config/git/ignore (git's default XDG path).
+
+# Compiled artifacts
+*.class
+*.dll
+*.exe
+*.o
+*.so
+
+# Archives. Better to commit the source than a compressed blob.
+*.7z
+*.jar
+*.rar
+*.zip
+*.gz
+*.bz2
+*.xz
+*.lzma
+*.iso
+*.tar
+
+# Logs and local databases
+*.log
+*.sqlite
+*.sqlite3
+
+# Editors
+*.swp
+*.swo
+.*.swp
+.*.swo
+.vscode/
+.idea/
+
+# OS noise. Kept despite this being a Linux box: repos are shared with
+# people on macOS and Windows.
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+Desktop.ini
+
+# Direnv / local env
+.direnv/
+.env.local
+
+# Agent scratch
+.claude/settings.local.json

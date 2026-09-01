@@ -1,0 +1,134 @@
+# Personal functions, ported from the old zsh config.
+
+# Omarchy aliases `g` to `git`; an alias shadows a same-named function at parse
+# time, so it has to go before the definition below.
+unalias g 2>/dev/null
+
+# Bare `g` is `git status`; anything else passes through to git.
+g() {
+  if (($# > 0)); then
+    git "$@"
+  else
+    git status
+  fi
+}
+
+# The repository's default branch, falling back sensibly when origin/HEAD is
+# not set. The old bin/git-up and bin/git-merge-branch hardcoded "master".
+git_default_branch() {
+  git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null | sed 's|^origin/||' && return
+  local b
+  for b in main master; do
+    git show-ref --verify --quiet "refs/remotes/origin/$b" && { echo "$b"; return; }
+  done
+  echo master
+}
+
+# Add a worktree, resolving the branch before asking git to use it.
+#
+# `git worktree add <path> <branch>` only accepts a branch the local repo
+# already knows about, so resolve cheaply first (local ref, then
+# remote-tracking ref) and only hit the network as a last resort.
+gwa() {
+  if (($# == 0)); then
+    echo "usage: gwa <path> [<branch>]" >&2
+    return 1
+  fi
+
+  local path="$1" branch="${2:-}"
+  local -a args
+
+  if [[ -z $branch ]]; then
+    args=("$path")
+  elif git show-ref --verify --quiet "refs/heads/$branch"; then
+    args=("$path" "$branch")
+  elif git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+    args=(-b "$branch" "$path" "origin/$branch")
+  elif git ls-remote --exit-code --heads origin "$branch" >/dev/null 2>&1; then
+    echo "fetching $branch from origin..."
+    # Explicit refspec: without one, a remote with no configured fetch refspec
+    # writes only FETCH_HEAD and origin/$branch stays unresolvable.
+    git fetch origin "$branch:refs/remotes/origin/$branch" || return 1
+    args=(-b "$branch" "$path" "origin/$branch")
+  else
+    echo "branch '$branch' not found locally or on origin" >&2
+    return 1
+  fi
+
+  git worktree add "${args[@]}" || return 1
+  command -v mise >/dev/null && mise trust "$path" >/dev/null 2>&1
+  cd "$path" || return 1
+}
+
+# Remove a worktree and delete its branch.
+gwr()  { git worktree remove "$1" && git branch -D "$1"; }
+gwrf() { git worktree remove --force "$1" && git branch -D "$1"; }
+
+# Load a .env into the current shell. Parsed line by line and validated against
+# a KEY=VALUE pattern rather than eval'd, so a stray command in the file cannot
+# execute.
+envup() {
+  local file="${1:-.env}"
+  if [[ ! -f $file ]]; then
+    echo "no $file found" >&2
+    return 1
+  fi
+
+  local line key value count=0
+  while IFS= read -r line || [[ -n $line ]]; do
+    [[ -z $line || $line =~ ^[[:space:]]*# ]] && continue
+    if [[ $line =~ ^[[:space:]]*([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=[[:space:]]*(.*)$ ]]; then
+      key="${BASH_REMATCH[1]}"
+      value="${BASH_REMATCH[2]}"
+      value="${value%\"}"; value="${value#\"}"
+      value="${value%\'}"; value="${value#\'}"
+      export "$key=$value"
+      count=$((count + 1))
+    else
+      echo "skipping invalid line: $line" >&2
+    fi
+  done < "$file"
+
+  echo "loaded $count variable(s) from $file"
+}
+
+# Run a command in each subdirectory.
+eachdir() {
+  if (($# == 0)); then
+    echo "usage: eachdir <command> [<depth=1>]" >&2
+    return 1
+  fi
+  find . -maxdepth "${2:-1}" -mindepth 1 -type d \
+    -exec bash -c 'cd "$1" && pwd && shift && eval "$@"' _ {} "$1" \;
+}
+
+# Sync a fork's default branch against upstream.
+sync() {
+  git rev-parse --git-dir >/dev/null 2>&1 || { echo "not a git repository" >&2; return 1; }
+  git remote get-url upstream >/dev/null 2>&1 || { echo "no 'upstream' remote" >&2; return 1; }
+
+  local branch
+  branch="$(git_default_branch)"
+  git fetch upstream &&
+    git checkout "$branch" &&
+    git merge "upstream/$branch" &&
+    git push
+}
+
+# mkdir and cd in one step. This was an alias in the old config, which could
+# never have worked -- $@ does not expand inside an alias.
+mk() {
+  (($# == 1)) || { echo "usage: mk <dir>" >&2; return 1; }
+  mkdir -p "$1" && cd "$1"
+}
+
+# Everything, in the right order. The old version ran apt, brew, gem and
+# composer, and pulled powerlevel10k.
+upgrade() {
+  command -v omarchy >/dev/null && omarchy update
+  command -v mise    >/dev/null && mise upgrade
+  if [[ -d "$DOTFILES/.git" ]]; then
+    echo "updating dotfiles..."
+    git -C "$DOTFILES" pull --ff-only && "$DOTFILES/install.sh" --links-only
+  fi
+}

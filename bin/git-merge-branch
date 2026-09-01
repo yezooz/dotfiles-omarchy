@@ -1,0 +1,8 @@
+#!/bin/sh
+#
+# Check out the default branch and merge the branch you just came from.
+
+set -e
+
+git checkout "$(git default-branch)"
+git merge "@{-1}"

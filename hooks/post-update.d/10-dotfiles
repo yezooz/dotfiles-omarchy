@@ -1,0 +1,7 @@
+#!/bin/bash
+# Re-apply dotfiles-omarchy links after `omarchy update`.
+#
+# `omarchy hook install` copies this file into ~/.config/omarchy/hooks, so it
+# stays a stub and the real logic lives in the repo, where git tracks it.
+[ -x "$HOME/.dotfiles-omarchy/install.sh" ] &&
+  exec "$HOME/.dotfiles-omarchy/install.sh" --links-only

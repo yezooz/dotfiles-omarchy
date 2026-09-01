@@ -1,0 +1,19 @@
+# Applied with `bind -f` after Omarchy's own inputrc, which is the only way
+# these stick.
+
+set editing-mode vi
+set show-mode-in-prompt off
+
+# Emacs-style movement kept inside vi insert mode: the handful of chords that
+# are pure muscle memory.
+"\C-a": beginning-of-line
+"\C-e": end-of-line
+"\C-k": kill-line
+"\C-y": yank
+"\C-r": reverse-search-history
+"\C-p": previous-history
+"\C-n": next-history
+
+# Arrow keys search history by what has already been typed.
+"\e[A": history-search-backward
+"\e[B": history-search-forward

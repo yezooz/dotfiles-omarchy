@@ -1,0 +1,14 @@
+-- Personal input overrides. Anything uncommented replaces Omarchy's default.
+-- See https://wiki.hypr.land/Configuring/Basics/Variables/#input
+
+-- hl.config({
+--   input = {
+--     kb_options = "compose:caps",
+--     repeat_rate = 40,
+--     repeat_delay = 250,
+--     touchpad = {
+--       natural_scroll = true,
+--       clickfinger_behavior = true,
+--     },
+--   },
+-- })

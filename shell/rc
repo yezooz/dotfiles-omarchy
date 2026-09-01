@@ -1,0 +1,23 @@
+# dotfiles-omarchy shell entrypoint, sourced from ~/.bashrc.
+#
+# Omarchy's own rc has already run by this point, so anything defined here
+# wins over its defaults. That is the reason to keep these files small: every
+# alias added here is one Omarchy default silently overridden.
+
+[[ $- != *i* ]] && return
+
+DOTFILES="${DOTFILES:-$HOME/.dotfiles-omarchy}"
+export DOTFILES
+
+for _f in env aliases functions; do
+  [[ -r "$DOTFILES/shell/$_f" ]] && source "$DOTFILES/shell/$_f"
+done
+unset _f
+
+# Machine-local settings that should not be committed: work AWS profiles,
+# client-specific paths, credentials.
+[[ -r "$HOME/.bashrc.local" ]] && source "$HOME/.bashrc.local"
+
+# Last, on purpose. Omarchy's rc ends with `bind -f .../default/bash/inputrc`,
+# so readline settings only stick if they are applied after it.
+[[ -r "$DOTFILES/shell/inputrc" ]] && bind -f "$DOTFILES/shell/inputrc"

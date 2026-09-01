@@ -1,0 +1,29 @@
+-- https://www.postgresql.org/docs/current/app-psql.html
+
+-- No "helpful" startup banner.
+\set QUIET 1
+
+\pset null '[NULL]'
+
+\set PROMPT1 '%[%033[1m%]%M %n@%/%R%[%033[0m%]%# '
+-- Printed when psql expects more input; %R says what kind.
+\set PROMPT2 '[more] %R > '
+
+-- Time every query.
+\timing
+
+-- Expanded output only when a row is too wide for the terminal.
+\x auto
+
+\set VERBOSITY verbose
+
+-- History per database, not one shared file.
+\set HISTFILE ~/.psql_history- :DBNAME
+\set HISTCONTROL ignoredups
+\set COMP_KEYWORD_CASE upper
+
+\unset QUIET
+
+-- psql cannot test for a file's existence, so this include is unconditional.
+-- Create ~/.psqlrc.local (even empty) for machine-local settings.
+\i ~/.psqlrc.local

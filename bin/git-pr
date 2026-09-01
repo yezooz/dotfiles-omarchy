@@ -1,0 +1,12 @@
+#!/bin/sh
+#
+# Open a pull request. Was `hub pull-request`; hub was archived in 2022.
+
+set -e
+
+if ! command -v gh >/dev/null 2>&1; then
+  echo "gh is not installed: https://cli.github.com" >&2
+  exit 1
+fi
+
+exec gh pr create --base "$(git default-branch)" "$@"

@@ -1,0 +1,30 @@
+#!/bin/sh
+#
+# Print the repository's default branch.
+#
+# Prefers origin/HEAD, which is what the remote actually says. Falls back to
+# whichever of main/master exists on the remote, then to the local ones.
+
+set -e
+
+if ref=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null); then
+  echo "${ref#origin/}"
+  exit 0
+fi
+
+for branch in main master; do
+  if git show-ref --verify --quiet "refs/remotes/origin/$branch"; then
+    echo "$branch"
+    exit 0
+  fi
+done
+
+for branch in main master; do
+  if git show-ref --verify --quiet "refs/heads/$branch"; then
+    echo "$branch"
+    exit 0
+  fi
+done
+
+echo "could not determine the default branch" >&2
+exit 1

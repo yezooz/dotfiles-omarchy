@@ -1,0 +1,24 @@
+# Personal environment. Omarchy already exports EDITOR, BROWSER, BAT_THEME,
+# MANPAGER, LANG and the ~/.local/bin PATH entry — none of that is repeated.
+
+# The old zsh config aliased `v` to $VISUAL without ever setting it.
+export VISUAL="${VISUAL:-$EDITOR}"
+
+export COLORTERM=truecolor
+
+# Node REPL: persistent history, sloppy mode to match browser semantics.
+export NODE_REPL_HISTORY="$HOME/.node_history"
+export NODE_REPL_HISTORY_SIZE=32768
+export NODE_REPL_MODE=sloppy
+
+export PYTHONIOENCODING=UTF-8
+
+# Bigger, de-duplicated history. Omarchy sets neither.
+export HISTSIZE=50000
+export HISTFILESIZE=50000
+export HISTCONTROL=ignoreboth:erasedups
+shopt -s histappend
+
+# aws-vault + 1Password. Set the profile names in ~/.bashrc.local; the aliases
+# in shell/aliases only appear when the matching variable is set.
+export AWS_VAULT_1P_ITEM="${AWS_VAULT_1P_ITEM:-AWS}"

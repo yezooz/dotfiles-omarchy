@@ -1,0 +1,2 @@
+-- Extra processes to start with the session.
+-- o.launch_on_start("my-service")
