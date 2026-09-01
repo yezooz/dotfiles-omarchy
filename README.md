@@ -41,6 +41,7 @@ first.
 | `config/psqlrc` | `~/.psqlrc` |
 | `config/hypr/*.lua` | `~/.config/hypr/` (four files only) |
 | `hosts/$(hostname)/hypr/monitors.lua` | `~/.config/hypr/monitors.lua` |
+| `config/claude/statusline.sh` | `~/.claude/statusline.sh` |
 | `config/omarchy/shell.json` | `~/.config/omarchy/shell.json` |
 | `config/omarchy/extensions/` | `~/.config/omarchy/extensions/` |
 | `bin/*` | `~/.local/bin/` |

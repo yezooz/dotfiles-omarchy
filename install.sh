@@ -200,6 +200,11 @@ else
   info "no monitors.lua for host '$HOST'; leaving Omarchy's in place"
 fi
 
+# Claude Code's own settings.json stays local: it holds machine-specific paths
+# and account state. Only the status line script is shared.
+header "Claude Code"
+link config/claude/statusline.sh "$HOME/.claude/statusline.sh"
+
 header "Omarchy desktop"
 link config/omarchy/shell.json "$HOME/.config/omarchy/shell.json"
 link config/omarchy/extensions/omarchy-menu.jsonc \
